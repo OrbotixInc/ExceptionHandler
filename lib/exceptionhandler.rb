@@ -1,4 +1,4 @@
-class ExceptionLogger
+class ExceptionHandler
   def call(options)
     if !options[:exception].nil?
       trace_chain = trace_chain(options[:exception])
