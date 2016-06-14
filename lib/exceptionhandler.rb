@@ -23,8 +23,8 @@ class ExceptionHandler
     app = ENV['DEIS_APP'] ? ENV['DEIS_APP'] : "unknown_app"
     release = ENV['WORKFLOW_RELEASE'] ? ENV['WORKFLOW_RELEASE'] : "unknown_release"
 
-    #Format is cluster.env.appname.release.exception
-    @metric_prefix="#{cluster_name}.#{environment}.#{app}.#{release}"
+    #Format is cluster.env.appname.release.exceptions.{exception_name}
+    @metric_prefix="#{cluster_name}.#{environment}.#{app}.#{release}.exceptions"
 
     @g_reporter = nil
 
@@ -35,7 +35,7 @@ class ExceptionHandler
 
       if @g_reporter == nil && ENV['graphite_host']
         p "Starting graphite reporter..."
-        @g_reporter = Metriks::Reporter::Graphite.new(ENV['graphite_host'], ENV['graphite_port'], :on_error => proc  { |ex| puts ex }, :interval=>10)
+        @g_reporter = Metriks::Reporter::Graphite.new(ENV['graphite_host'], ENV['graphite_port'], :on_error => proc  { |ex| puts ex })
         @g_reporter.start
         p "Reporting metrics with prefix: " + @metric_prefix
       end
