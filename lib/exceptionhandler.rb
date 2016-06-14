@@ -1,6 +1,6 @@
 require 'metriks'
 require 'logger'
-require 'metriks/reporter/logger'
+require 'metriks/reporter/graphite'
 require 'unirest'
 
 
@@ -26,10 +26,12 @@ class ExceptionHandler
     #Format is cluster.env.appname.release.exception
     @metric_prefix="#{cluster_name}.#{environment}.#{app}.#{release}"
 
-    p "Starting log reporter..."
-    log_reporter = Metriks::Reporter::Logger.new(:logger => Logger.new('./metrics.log'), :on_error => proc  { |ex| puts ex })
-    log_reporter.start
-    p "Logging metrics with prefix: " + @metric_prefix
+    if ENV['graphite_host']
+      p "Starting graphite reporter..."
+      g_reporter = Metriks::Reporter::Graphite.new(ENV['graphite_host'], ENV['graphite_port'], :on_error => proc  { |ex| puts ex }, :interval=>10)
+      g_reporter.start
+      p "Reporting metrics with prefix: " + @metric_prefix
+    end
   end
 
   def call(options)
@@ -40,6 +42,7 @@ class ExceptionHandler
       excep = options[:exception].class.name.gsub('::','_') 
       meter = Metriks.meter("#{@metric_prefix}.#{excep}")
       meter.mark
+      puts meter
       
     end
     
