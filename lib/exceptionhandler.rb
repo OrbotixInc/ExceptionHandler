@@ -37,8 +37,9 @@ class ExceptionHandler
       trace_chain = trace_chain(options[:exception])
       puts "Exception Caught ("+options[:exception].class.name+"): " + trace_chain.to_s
 
-     meter = Metriks.meter("#{@metric_prefix}.#{options[:exception].class.name}")
-     meter.mark
+      excep = options[:exception].class.name.gsub('::','_') 
+      meter = Metriks.meter("#{@metric_prefix}.#{excep}")
+      meter.mark
       
     end
     
