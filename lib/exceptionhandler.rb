@@ -33,6 +33,7 @@ class ExceptionHandler
   def call(options)
     if !options[:exception].nil?
 
+      #Rails doesn't like it if this thread is started in the initializer, so lets do it here if it wasn't already done.
       if @g_reporter == nil && ENV['graphite_host']
         p "Starting graphite reporter..."
         @g_reporter = Metriks::Reporter::Graphite.new(ENV['graphite_host'], ENV['graphite_port'], :on_error => proc  { |ex| puts ex })
@@ -46,8 +47,6 @@ class ExceptionHandler
       excep = options[:exception].class.name.gsub('::','_') 
       meter = Metriks.meter("#{@metric_prefix}.#{excep}")
       meter.mark
-      puts meter
-      
     end
     
     #The whole point of this handler is to replace rollbar, so raise this exception to prevent trying to send to rollbar
