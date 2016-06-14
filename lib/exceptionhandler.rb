@@ -27,7 +27,7 @@ class ExceptionHandler
     @metric_prefix="#{cluster_name}.#{environment}.#{app}.#{release}"
 
     p "Starting log reporter..."
-    log_reporter = Metriks::Reporter::Logger.new(:logger => Logger.new('./metrics.log'))
+    log_reporter = Metriks::Reporter::Logger.new(:logger => Logger.new('./metrics.log'), :on_error => proc  { |ex| puts ex })
     log_reporter.start
     p "Logging metrics with prefix: " + @metric_prefix
   end
