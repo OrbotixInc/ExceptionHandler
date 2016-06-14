@@ -26,16 +26,20 @@ class ExceptionHandler
     #Format is cluster.env.appname.release.exception
     @metric_prefix="#{cluster_name}.#{environment}.#{app}.#{release}"
 
-    if ENV['graphite_host']
-      p "Starting graphite reporter..."
-      g_reporter = Metriks::Reporter::Graphite.new(ENV['graphite_host'], ENV['graphite_port'], :on_error => proc  { |ex| puts ex }, :interval=>10)
-      g_reporter.start
-      p "Reporting metrics with prefix: " + @metric_prefix
-    end
+    @g_reporter = nil
+
   end
 
   def call(options)
     if !options[:exception].nil?
+
+      if @g_reporter == nil && ENV['graphite_host']
+        p "Starting graphite reporter..."
+        @g_reporter = Metriks::Reporter::Graphite.new(ENV['graphite_host'], ENV['graphite_port'], :on_error => proc  { |ex| puts ex }, :interval=>10)
+        @g_reporter.start
+        p "Reporting metrics with prefix: " + @metric_prefix
+      end
+
       trace_chain = trace_chain(options[:exception])
       puts "Exception Caught ("+options[:exception].class.name+"): " + trace_chain.to_s
 
