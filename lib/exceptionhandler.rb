@@ -31,6 +31,7 @@ class ExceptionHandler
   end
 
   def call(options)
+    put "called"
     if !options[:exception].nil?
 
       #Rails doesn't like it if this thread is started in the initializer, so lets do it here if it wasn't already done.
@@ -47,6 +48,8 @@ class ExceptionHandler
       excep = options[:exception].class.name.gsub('::','_') 
       meter = Metriks.meter("#{@metric_prefix}.#{excep}")
       meter.mark
+    else
+      puts options
     end
     
     #The whole point of this handler is to replace rollbar, so raise this exception to prevent trying to send to rollbar
