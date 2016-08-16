@@ -2,15 +2,8 @@ GEM
   remote: https://rubygems.org/
   specs:
     addressable (2.3.8)
-    atomic (1.1.99)
-    avl_tree (1.2.1)
-      atomic (~> 1.1)
-    hitimes (1.2.3)
+    httpclient (2.8.2.2)
     json (1.8.3)
-    metriks (0.9.9.7)
-      atomic (~> 1.0)
-      avl_tree (~> 1.2.0)
-      hitimes (~> 1.1)
     mime-types (1.25.1)
     multi_json (1.12.0)
     rest-client (1.6.9)
@@ -26,9 +19,12 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  metriks
+  httpclient
   rollbar
   unirest
 
+RUBY VERSION
+   ruby 2.3.0p0
+
 BUNDLED WITH
-   1.11.2
+   1.12.5

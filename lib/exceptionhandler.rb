@@ -1,7 +1,6 @@
-require 'metriks'
 require 'logger'
-require 'metriks/reporter/graphite'
 require 'unirest'
+require 'httpclient'
 
 
 class ExceptionHandler
@@ -23,31 +22,34 @@ class ExceptionHandler
     app = ENV['DEIS_APP'] ? ENV['DEIS_APP'] : "unknown_app"
     release = ENV['WORKFLOW_RELEASE'] ? ENV['WORKFLOW_RELEASE'] : "unknown_release"
 
-    #Format is cluster.env.appname.release.exceptions.{exception_name}
-    @metric_prefix="#{cluster_name}.#{environment}.#{app}.#{release}.exceptions"
-
-    @g_reporter = nil
-
+    @request_body_base = {:application => app, :version => release, :environment => environment, :cluster => cluster_name, :token => ENV['EXCEPTION_TOKEN']}
   end
 
   def call(options)
-    put "called"
     if !options[:exception].nil?
-
-      #Rails doesn't like it if this thread is started in the initializer, so lets do it here if it wasn't already done.
-      if @g_reporter == nil && ENV['graphite_host']
-        p "Starting graphite reporter..."
-        @g_reporter = Metriks::Reporter::Graphite.new(ENV['graphite_host'], ENV['graphite_port'], :on_error => proc  { |ex| puts ex })
-        @g_reporter.start
-        p "Reporting metrics with prefix: " + @metric_prefix
-      end
 
       trace_chain = trace_chain(options[:exception])
       puts "Exception Caught ("+options[:exception].class.name+"): " + trace_chain.to_s
 
-      excep = options[:exception].class.name.gsub('::','_') 
-      meter = Metriks.meter("#{@metric_prefix}.#{excep}")
-      meter.mark
+      excep = options[:exception].class.name 
+      backtrace = "#{ options[:exception].message } (#{ options[:exception].class })\n" <<
+      (options[:exception].backtrace || []).join("\n")
+
+      if ENV['EXCEPTION_URL']
+        puts "MATT MATT MATT"
+        excep = options[:exception].class.name
+        backtrace = "#{ options[:exception].message } (#{ options[:exception].class })\n" <<
+        (options[:exception].backtrace || []).join("\n")
+
+        request_body = @request_body_base
+        request_body[:timestamp] = Time.now
+        request_body[:exception] = excep
+        request_body[:stacktrace] = backtrace
+
+        clnt = HTTPClient.new()
+        clnt.post_async(ENV['EXCEPTION_URL'], request_body) 
+      end
+
     else
       puts options
     end
