@@ -36,7 +36,6 @@ class ExceptionHandler
       (options[:exception].backtrace || []).join("\n")
 
       if ENV['EXCEPTION_URL']
-        puts "MATT MATT MATT"
         excep = options[:exception].class.name
         backtrace = "#{ options[:exception].message } (#{ options[:exception].class })\n" <<
         (options[:exception].backtrace || []).join("\n")
