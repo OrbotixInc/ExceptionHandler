@@ -9,4 +9,5 @@ Gem::Specification.new do |s|
   s.files       = ["lib/exceptionhandler.rb"]
   s.license       = 'MIT'
   s.add_runtime_dependency 'httpclient' ,  '~> 2.8', '>= 2.8.2.2'
+  s.add_runtime_dependency 'unirest' ,  '~> 1.1', '>= 1.1.2'
 end
