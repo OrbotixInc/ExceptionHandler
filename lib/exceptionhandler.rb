@@ -40,13 +40,17 @@ class ExceptionHandler
         backtrace = "#{ options[:exception].message } (#{ options[:exception].class })\n" <<
         (options[:exception].backtrace || []).join("\n")
 
+        # Create a hash id from the exception class and the stacktrace to identify unique occurences of the same exception class
+        hash_id = Digest::SHA256.hexdigest "#{options[:exception].class} #{options[:exception].backtrace}"
+
         request_body = @request_body_base
         request_body[:timestamp] = Time.now
+        request_body[:id] = hash_id
         request_body[:exception] = excep
-        request_body[:stacktrace] = backtrace
+        request_body[:detail] = backtrace
 
         clnt = HTTPClient.new()
-        clnt.post_async(ENV['EXCEPTION_URL'], request_body) 
+        clnt.post_async("#{ENV['EXCEPTION_URL']}/exception", request_body) 
       end
 
     else
