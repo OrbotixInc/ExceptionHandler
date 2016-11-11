@@ -41,7 +41,7 @@ class ExceptionHandler
         (options[:exception].backtrace || []).join("\n")
 
         # Create a hash id from the exception class and the stacktrace to identify unique occurences of the same exception class
-        hash_id = Digest::SHA256.hexdigest "#{options[:exception].class} #{options[:exception].backtrace}"
+        hash_id = Digest::SHA256.hexdigest "#{excep} #{backtrace}"
 
         request_body = @request_body_base
         request_body[:timestamp] = Time.now
