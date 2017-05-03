@@ -9,7 +9,7 @@ class ExceptionHandler
     cluster_name="unknown_cluster"
     begin
       clnt = HTTPClient.new()
-      response = clnt.get_content "http://metadata.google.internal/computeMetadata/v1/instance/attributes/cluster-name", nil, "Metadata-Flavor" => "Google"
+      response = clnt.get "http://metadata.google.internal/computeMetadata/v1/instance/attributes/cluster-name", nil, "Metadata-Flavor" => "Google"
       if response.status == 200
         cluster_name=response.body
       end
