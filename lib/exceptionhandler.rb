@@ -1,5 +1,4 @@
 require 'logger'
-require 'unirest'
 require 'httpclient'
 
 
@@ -9,8 +8,9 @@ class ExceptionHandler
     #Get the cluster name from Google metadata service
     cluster_name="unknown_cluster"
     begin
-      response = Unirest.get('http://metadata.google.internal/computeMetadata/v1/instance/attributes/cluster-name',headers:{ "Metadata-Flavor" => "Google"})
-      if response.code == 200
+      clnt = HTTPClient.new()
+      response = clnt.get "http://metadata.google.internal/computeMetadata/v1/instance/attributes/cluster-name", nil, "Metadata-Flavor" => "Google"
+      if response.status == 200
         cluster_name=response.body
       end
     rescue
