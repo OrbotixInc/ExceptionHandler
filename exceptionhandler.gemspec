@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'exceptionhandler'
-  s.version     = '0.0.4'
+  s.version     = '0.0.5'
   s.date        = '2017-05-03'
   s.summary     = "Log exceptions in a log friendly way."
   s.description = "Log exceptions in a log friendly way."
